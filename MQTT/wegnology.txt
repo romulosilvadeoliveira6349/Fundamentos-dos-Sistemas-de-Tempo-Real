@@ -1,0 +1,562 @@
+
+[Etapa 1]
+
+Instalar um broker no Linux: mosquitto
+
+https://mosquitto.org/man/mosquitto-8.html
+
+	sudo apt install mosquitto
+	sudo apt install mosquitto-clients
+
+	sudo systemctl status mosquitto		p/verificar o status
+	sudo systemctl start mosquitto		p/ativar manualmente
+	sudo systemctl enable mosquitto		p/ativar sempre no boot
+
+	sudo service mosquitto stop
+	sudo systemctl stop mosquitto.service
+
+
+	mosquitto -v  						p/ativar no console em verbose mode
+
+
+
+
+Teste:
+
+Terminal 2:
+    mosquitto_sub -h localhost -t /home/sensors/temp/kitchen 
+Terminal 3:
+    mosquitto_sub -h localhost -t /home/sensors/temp/bedroom 
+Terminal 4:
+    mosquitto_sub -h localhost -t /home/sensors/temp/# 
+Terminal 1:
+	mosquitto_pub -h localhost -t /home/sensors/temp/kitchen -m "Kitchen Temperature: 26°C"
+
+
+
+Senha:
+sudo mosquitto_passwd -c /etc/mosquitto/passwd romulo
+This operation overwrites the "/etc/mosquitto/passwd" file each time
+
+	sudo nano /etc/mosquitto/conf.d/default.conf
+
+	allow_anonymous false
+	password_file /etc/mosquitto/passwd
+
+	sudo systemctl restart mosquitto
+
+
+
+Publication:
+	mosquitto_pub -h address -t topic -m "message" -u "username" -P "password"
+
+Subscription:
+	mosquitto_sub -h address-t topic-u "usurname" -P "password"
+
+
+
+
+
+[Etapa 2]
+
+Implementar em C um subscriber
+
+	https://github.com/eclipse/mosquitto/tree/master/test/lib/c
+	https://mosquitto.org/man/libmosquitto-3.html
+	https://mosquitto.org/man/mosquitto-8.html
+
+
+	sudo apt install libmosquitto-dev
+default port of 1883
+https://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels/
+There are 3 QoS levels in MQTT:
+    At most once (0)
+    At least once (1)   Usar este
+    Exactly once (2)
+
+
+API do libmosquitto, a biblioteca cliente do Mosquitto:
+	https://mosquitto.org/api/files/mosquitto-h.html
+
+
+
+gcc -o mqtt_sub mqtt_sub.c  -lmosquitto
+
+
+
+
+
+
+
+[Etapa 3]
+
+Implementar em C um publisher
+
+gcc -o mqtt_pub mqtt_pub.c  -lmosquitto
+
+
+
+[Opção para etapa 3 e 4]
+
+Usar a biblioteca Paho para clientes MQTT, é melhor que mosquitto
+
+https://www.embarcados.com.br/paho-mqtt-em-c-no-linux-embarcado/
+
+
+
+
+[Etapa 4]
+
+App Android MQTT Dash é um cliente MQTT que permite acessar o Broker
+
+https://www.embarcados.com.br/mqtt-dash/
+
+
+[Etapa 5]
+
+Criar uma aplicação no wegnology
+
+Acionamentos on/off:
+
+	Bomba do coletor solar
+"bombacoletor"
+
+	Bomba de recirculacao
+"bombacirculacao"
+
+	Aquecedor elétrico no boiler
+"aquecedor"
+
+	Válvula de entrada de água
+"valvulaentrada"
+
+	Válvula de esgotamento
+"valvulaesgoto"
+
+
+
+Sensores lidos:
+
+	Nível da água no boiler
+"nivelboiler"	
+	
+	Temperatura da água no boiler
+"tempboiler"
+
+"tempcoletor"
+	Temperatura da água nos coletores solares
+
+"tempcanos"
+	Temperatura da água nos canos
+
+
+
+
+
+
+===================================================
+
+TCP: mqtt://broker.app.wnology.io:1883
+TLS: mqtts://broker.app.wnology.io:8883
+
+https://docs.app.wnology.io/mqtt/overview/
+
+---------------------------------------------------
+
+The WEGnology Message Broker
+
+In order to support the existing MQTT implementations, WEGnology provides an MQTT message broker that can be used for any arbitrary topics and payloads. To make use of WEGnology features including data collection, visualization, and workflows, WEGnology provides an opinionated MQTT implementation that must be followed.
+
+The WEGnology Message Broker can be reached using several transports:
+
+    TCP: mqtt://broker.app.wnology.io:1883
+    TLS: mqtts://broker.app.wnology.io:8883
+    WebSockets: ws://broker.app.wnology.io:80
+    Secure WebSockets: wss://broker.app.wnology.io:443
+
+---------------------------------------------------
+
+Broker Authentication
+
+WEGnology requires the client ID, username, and password fields be correctly set on all MQTT connect calls.
+
+    client id—Must be set to a valid Device ID that is already registered with the WEGnology Platform.
+    username—Must be set to a WEGnology Access Key.
+    password—Must be set to a WEGnology Access Secret, which is generated when creating an Access key.
+
+For example, a connect call using the Javascript MQTT client is displayed below:
+
+var client = mqtt.connect('mqtts://broker.app.wnology.io', {
+  clientId: 'my-device-id',
+  username: 'my-access-key',
+  password: 'my-access-secret',
+})
+
+Access Control
+
+To connect your devices to the WEGnology MQTT Broker, you must use Access Keys. By default, access keys only allow access to the device-specific topics (e.g. state and commands for every device you have allowed.
+
+---------------------------------------------------
+
+https://docs.app.wnology.io/devices/state/
+
+Publishing Device State
+
+Device State is likely the most commonly published message. When thinking in terms of sensor data, the device state is typically the value of one or more sensors.
+State Topic Form
+
+losant/DEVICE_ID/state
+
+State Payload Form
+
+{
+  "data" : {
+    "an_attribute_name": "an_attribute_value",
+    "another_attribute_name": "another_attribute_value"
+  },
+  "time": <Optional Timestamp>,
+  "flowVersion": <Optional Workflow Version Name>
+}
+
+data (required)—Required. An object where the keys are device attribute names and the values are the values for those attributes.
+
+time—Optional. When it is not included, WEGnology assumes that the reported state is for the current time. Reporting a timestamp can be beneficial, however, depending on your use case.
+
+flowVersion—Optional. Specifies which version of a workflow(/workflows/versioning/#triggering-specific-versions) will run when triggered by the payload. When not included, the default versions of any triggering workflows will run.
+Publish State Example
+
+You’ll generally have an attribute for each sensor attached to your device. For example, if a device with ID 575ecf887ae143cd83dc4aa2 has a temperature sensor, you might report a state that has an attribute named “temperature” by publishing to the topic below with the following payload:
+
+losant/575ecf887ae143cd83dc4aa2/state
+
+{
+  "data": {
+    "temperature": 72
+  },
+  "time": { "$date": "2016-11-04T19:42:06.710Z" }
+}
+
+When a device publishes data in this format, WEGnology automatically stores the data and makes it available in our Dashboards as well as exposing it through Workflows. The attributes you send must be configured on the device before WEGnology will accept the data.
+
+
+---------------------------------------------------
+
+https://docs.app.wnology.io/devices/commands/
+
+Subscribing to Commands
+
+Device Commands instruct your device to perform a specific action. Commands are typically initiated using WEGnology Workflows. Commands include a name and an optional payload.
+Command Topic Form
+
+losant/DEVICE_ID/command
+
+Payload Topic Form
+
+{
+  "name": "command-name",
+  "payload": {}
+}
+
+name—Command name.
+
+payload—Any JSON value that provides necessary arguments to your command.
+
+Commands do not have to be pre-registered with WEGnology in order for them to be received. What commands your device supports is entirely up to your specific application and your device’s firmware.
+Example Command Subscription
+
+Below is a command example that instructs a thermostat associated with the device ID 575ecf887ae143cd83dc4aa2 to set itself to a specific temperature. The following payload is published on the topic below, and the device is listening on that topic for command messages:
+
+losant/575ecf887ae143cd83dc4aa2/command
+
+{
+  "name": "set-temperature",
+  "payload": {
+    "temperature": 72
+  }
+}
+
+
+===================================================
+
+https://docs.app.wnology.io/		documentacao
+
+
+https://accounts.app.wnology.io/signin?				sistema
+sdwegc12c-FF
+
+
+https://solar2022.wnology.io/
+Email: test.user.zykbb3mdot@example.com
+Password: zykbb3mdot
+
+
+https://solar2022.wnology.io
+testesolar2022@example.com
+12345678
+
+
+
+Acionamentos on/off:
+
+Bomba do coletor solar
+Bomba de recirculacao
+Aquecedor elétrico no boiler
+Válvula de entrada de água
+Válvula de esgotamento
+
+Sensores lidos:
+
+Nível da água no boiler
+Temperatura da água no boiler
+Temperatura da água nos coletores solares
+Temperatura da água nos canos
+
+
+"bombacoletor"
+"bombacirculacao"
+"aquecedor"
+"valvulaentrada"
+"valvulaesgoto"
+
+"nivelboiler"
+"tempboiler"
+"tempcoletor"
+"tempcanos"
+
+
+===================================================
+
+Roteiro WEGnology
+
+
+
+Início
+https://docs.app.wnology.io/
+
+
+Sandbox
+https://docs.app.wnology.io/user-accounts/sandbox/
+
+
+Applications
+https://docs.app.wnology.io/applications/overview/
+
+
+Access Keys
+https://docs.app.wnology.io/applications/access-keys/
+
+
+Devices
+https://docs.app.wnology.io/devices/overview/
+
+
+Dashboards
+https://docs.app.wnology.io/dashboards/overview/
+
+
+MQTT Protocol
+https://docs.app.wnology.io/mqtt/overview/
+
+
+Experiences
+https://docs.app.wnology.io/experiences/overview/
+
+
+LOSANT
+https://docs.losant.com/
+
+
+
+===============================================
+IoT - Visão Geral dos Trabalhos   1de4
+
+https://youtu.be/ftbaUzVoZuo
+
+Descrição dos Trabalhos ST9 e ST10 (1 de 4): Internet das Coisas (Visão Geral)
+
+Descrição dos trabalhos ST9 e ST10 - Internet das Coisas
+Visão Geral
+Livro Fundamentos dos Sistemas de Tempo Real
+http://www.romulosilvadeoliveira.eng.br/livrotemporeal/livrotemporeal.html
+
+
+
+
+
+
+
+Página da Weg sobre WEGnology 
+https://www.weg.net/institutional/BR/pt/solutions/digital-solutions/wegnology
+
+Vídeo de introdução da WEGnology
+https://www.youtube.com/watch?v=GPXuY0NjaHM
+
+Documentação da WEGnology
+https://docs.app.wnology.io/
+
+Introdução ao MQTT (UFRJ)
+https://www.gta.ufrj.br/ensino/eel878/redes1-2019-1/vf/mqtt/
+
+Site do MQTT
+https://mqtt.org/
+
+Cursos da Losant University
+https://www.losant.com/university
+
+Trabalho de Leon Cesar Carmona
+https://repositorio.ufsc.br/handle/123456789/233253
+
+
+===============================================
+IoT - Página Web a partir da plataforma WEGnology   2de4
+
+https://youtu.be/w3S0MkBNZP0
+
+
+Descrição dos Trabalhos ST9 e ST10 (2 de 4): Internet das Coisas (Exemplo)
+
+Descrição dos trabalhos ST9 e ST10 - Internet das Coisas
+Exemplo
+Livro Fundamentos dos Sistemas de Tempo Real
+http://www.romulosilvadeoliveira.eng.br/livrotemporeal/livrotemporeal.html
+
+
+
+
+
+
+Página da Weg sobre WEGnology 
+https://www.weg.net/institutional/BR/pt/solutions/digital-solutions/wegnology
+
+Vídeo de introdução da WEGnology
+https://www.youtube.com/watch?v=GPXuY0NjaHM
+
+Introdução ao MQTT (UFRJ)
+https://www.gta.ufrj.br/ensino/eel878/redes1-2019-1/vf/mqtt/
+
+Site do MQTT
+https://mqtt.org/
+
+
+===============================================
+IoT - Plataforma WEGnology   3de4
+
+https://youtu.be/BqU1rChYgBI
+
+
+Descrição dos Trabalhos ST9 e ST10 (3 de 4): Internet das Coisas (Lado Nuvem)
+
+Descrição dos trabalhos ST9 e ST10 - Internet das Coisas
+Lado Nuvem
+Livro Fundamentos dos Sistemas de Tempo Real
+http://www.romulosilvadeoliveira.eng.br/livrotemporeal/livrotemporeal.html
+
+
+
+
+
+
+Página da Weg sobre WEGnology 
+https://www.weg.net/institutional/BR/pt/solutions/digital-solutions/wegnology
+
+Vídeo de introdução da WEGnology
+https://www.youtube.com/watch?v=GPXuY0NjaHM
+
+Documentação da WEGnology
+https://docs.app.wnology.io/
+
+Página de login na plataforma WEGnology
+https://accounts.app.wnology.io/signin?
+
+
+===============================================
+IoT - Programação C do cliente MQTT   4de4
+
+https://youtu.be/ciDnxTcb_wU
+
+
+
+Descrição dos Trabalhos ST9 e ST10 (4 de 4): Internet das Coisas (Lado Dispositivo)
+
+Descrição dos trabalhos ST9 e ST10 - Internet das Coisas
+Lado Dispositivo
+Livro Fundamentos dos Sistemas de Tempo Real
+http://www.romulosilvadeoliveira.eng.br/livrotemporeal/livrotemporeal.html
+
+
+
+
+
+Programas para testar o broker Mosquitto, mostra como programar clientes
+https://github.com/eclipse/mosquitto/tree/master/test/lib/c
+
+
+Man da libmosquitto
+https://mosquitto.org/man/libmosquitto-3.html
+	
+	
+API do libmosquitto, a biblioteca cliente do Mosquitto:
+https://mosquitto.org/api/files/mosquitto-h.html
+
+
+A biblioteca Paho para clientes MQTT também pode ser usada
+https://www.embarcados.com.br/paho-mqtt-em-c-no-linux-embarcado/
+
+
+Linha de compilação
+gcc -o mqtt_cliente mqtt_cliente.c  -lmosquitto
+
+
+Exemplos de uso da biblioteca cliente libmosquitto
+https://github.com/eclipse/mosquitto/blob/master/examples/publish/basic-1.c
+https://github.com/eclipse/mosquitto/blob/master/examples/subscribe/basic-1.c
+
+
+Como a WEGnology espera as mensagens
+https://docs.app.wnology.io/mqtt/overview/
+https://docs.app.wnology.io/devices/state/
+https://docs.app.wnology.io/devices/commands/
+	
+
+================================================================================
+
+An Introduction to JSON and MQTT with Roger Light
+https://www.youtube.com/watch?v=qZtBHSaseYM
+
+Introducing JSON
+https://www.json.org/json-en.html
+
+
+
+Install the JSON-c library
+sudo apt install libjson-c-dev
+
+https://github.com/json-c/json-c
+
+https://github.com/rbtylee/tutorial-jsonc/blob/master/tutorial/index.md
+https://github.com/rbtylee/tutorial-jsonc/blob/master/src/json-parse04.c
+
+
+NOT THREAD-SAFE
+
+Although json-c does not support fully multi-threaded access to object trees, it has some code to help make its use in threaded programs a bit safer. 
+Currently, this is limited to using atomic operations for json_object_get() and json_object_put().
+Since this may have a performance impact, of at least 3x slower according to https://stackoverflow.com/a/11609063, it is disabled by default. You may turn it on by adjusting your cmake command with: -DENABLE_THREADING=ON
+
+--> Do you need to parse arbitrary JSON structures, or just data that's specific to your application.
+
+
+Minhas próprias rotinas ????
+
+
+
+
+
+
+
+
+
+
+
+
+

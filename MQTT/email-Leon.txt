@@ -1,0 +1,40 @@
+Senhores, boa noite!
+
+Ainda com relação ao meu trabalho desenvolvido no PFC, encaminho aqui o link para acessar a plataforma de IoT da WEG, o WEGnology, que utilizei para fazer o desenvolvimento da lógica presente no gateway ED300, além de outras diversas funcionalidades do sistema.
+
+https://www.weg.net/institutional/BR/pt/solutions/digital-solutions/wegnology
+
+Rolando a página um pouco para baixo, após o vídeo de apresentação, existe um botão "Clique aqui e acesse a plataforma", onde vocês serão redirecionados para a página de criação da conta.
+
+Uma vez que tiverem suas contas criadas, recomendo acessar a documentação da plataforma, onde existe um tutorial para a criação de uma primeira aplicação (link abaixo), que ajuda a se familiarizar com tudo. 
+
+https://docs.app.wnology.io/getting-started/walkthrough/
+
+Esta aplicação foi citada em minha defesa, como sendo meu primeiro contato com a plataforma.
+
+Trata-se de um sistema que usa uma API que fornece dados sobre o clima de uma determinada região definida pelo usuário.
+
+É interessante pois aborda alguns dos principais elementos da plataforma, como a utilização de devices e criação de Dashboards para visualização intuitiva dos dados.
+
+A documentação do WEGnology é bastante extensa e didática (como meu PFC). 
+
+Aproveito para incluir um link que explica como utilizar o node-red como um gateway do WEGnology (sensor bluetooth conectado ao node-red, que por sua vez está conectado ao wegnology).
+
+https://www.losant.com/blog/how-to-use-node-red-as-losant-gateway
+
+A empresa Losant criou o WEGnology, e a WEG comprou os direitos de explorar a aplicação com seu nome. 
+
+Também é possível acessar a plataforma (com a mesma conta do WEGnology, existe uma integração), diretamente pelo site da Losant (https://www.losant.com/), além da vasta documentação disponível diretamente por lá (https://docs.losant.com/).
+
+Por fim, recomendo bastante a plataforma, sendo muito poderosa mesmo em sua versão gratuita, provavelmente sendo possível de ser utilizada no decorrer de alguma disciplina da UFSC.
+
+Se tiverem qualquer dúvida sobre um eventual projeto, para saber se daria pra fazer, talvez posso conhecer alguns atalhos.
+
+Fico à disposição.
+
+Att,
+
+Leon.
+
+
+
