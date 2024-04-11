@@ -1,3 +1,6 @@
+# https://www.youtube.com/watch?v=tRZGeaHPoaw
+
+
 
 # Working files
 # Staging (add)
@@ -16,8 +19,40 @@
 
 # git commit -a -m "......................"     pula a fase do stage
 
+# git commit -m "......................" --amend
+
+
+# git restore xxx.txt
+# git mv nome-velho nome-nome
+
+
+# git log
+
+# git log -p
+
+# git reset <id do commit> 
+
+
 
 # ignore all .txt files
 #        *.txt
+
+#------------------------------------------------------
+
+# git branch NomeBranch
+# git branch
+# git switch NomeBranch
+# git branch
+
+# git switch main
+# git merge -m "merge isto aquilo" NomeBranch
+# git branch -d NomeBranch
+# git branch
+
+
+#-------------------------------------------------------
+
+
+
 
 
