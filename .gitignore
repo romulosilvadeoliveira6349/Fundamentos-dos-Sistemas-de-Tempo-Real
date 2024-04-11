@@ -1,3 +1,22 @@
+
+# Working files
+# Staging (add)
+# Commit (commit)
+
+
+
+# git init
+# git status
+# cat > .gitignore
+# git add --all
+# git commit -m ".................."
+# git diff
+
+# git restore --staged xxx.txt
+
+# git commit -a -m "......................"     pula a fase do stage
+
+
 # ignore all .txt files
 #        *.txt
 
