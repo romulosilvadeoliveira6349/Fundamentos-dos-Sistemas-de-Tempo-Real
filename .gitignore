@@ -1,6 +1,11 @@
 # https://www.youtube.com/watch?v=tRZGeaHPoaw
 
 
+#git remote add origin https://github.com/romulosilvadeoliveira6349/Fundamentos-dos-Sistemas-de-Tempo-Real.git
+#git branch -M main
+#git push -u origin main
+
+
 
 # Working files
 # Staging (add)
