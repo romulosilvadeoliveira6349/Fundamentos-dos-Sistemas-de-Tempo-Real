@@ -1,1 +1,1 @@
-Livro Fundamentos dos Sistemas de Tempo RealDisponível em amazon.com.brhttps://a.co/d/09QaromAqui estão os arquivos citados nos vídeos no canal do youtube associado ao livrohttps://www.youtube.com/@romulosilvadeoliveira5101
+Livro Fundamentos dos Sistemas de Tempo RealDisponível em amazon.com.brhttps://a.co/d/09QaromAqui estão os arquivos citados nos vídeos no canal do youtube associado ao livrohttps://www.youtube.com/@romulosilvadeoliveira5101
